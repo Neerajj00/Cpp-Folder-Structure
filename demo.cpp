@@ -1,106 +1,74 @@
 #include <iostream>
 #include <vector>
-#include <queue>
-#include <climits>
-#include <algorithm>
 
 using namespace std;
-typedef pair<int, int> P;
 
-class Solution
-{
-private:
-    vector<vector<P>> make(vector<vector<int>> &edges, int n)
-    {
-        vector<vector<P>> adj(n + 1);
-        for (auto &edge : edges)
-        {
-            int u = edge[0];
-            int v = edge[1];
-            int wt = edge[2];
-            adj[u].push_back({v, wt});
-            adj[v].push_back({u, wt});
+class disjointSet{
+    private:
+    vector<int> parent, size, rank;
+    public:
+    disjointSet(int n){
+        parent.resize(n + 1);
+        size.resize(n + 1);
+        rank.resize(n + 1, 0);
+        for(int i = 0; i <= n; i++){
+            parent[i] = i;
+            size[i] = 1;
         }
-        return adj;
     }
 
-public:
-    vector<int> shortestPath(int n, int m, vector<vector<int>> &edges)
-    {
-        vector<vector<P>> adj = make(edges, n);
+    int findUltiParent(int node){
+        if(node == parent[node]) return node;
+        return parent[node] = findUltiParent(parent[node]);
+    }
 
-        priority_queue<P, vector<P>, greater<P>> pq;
-        vector<int> dist(n + 1, INT_MAX);
-        vector<int> parent(n + 1, -1);
+    void unionByRank(int u , int v){
+        int up_u = findUltiParent(u);
+        int up_v = findUltiParent(v);
+        if(up_u == up_v) return;
 
-        dist[1] = 0;
-        parent[1] = 1;
-        pq.push({0, 1});
-
-        while (!pq.empty())
-        {
-            int d = pq.top().first;
-            int node = pq.top().second;
-            pq.pop();
-            for (auto it : adj[node])
-            {
-                int newDist = d + it.second;
-                int newNode = it.first;
-
-                if (dist[newNode] > newDist)
-                {
-                    dist[newNode] = newDist;
-                    pq.push({newDist, newNode});
-                    parent[newNode] = node;
-                }
-            }
+        if(rank[u] > rank[v]){
+            parent[v] = u;
+        }else if (rank[v] > rank[u]){
+            parent[u] = v;
+        }else{
+            parent[v] = u;
+            rank[u]++;
         }
+    }
 
-        if (dist[n] == INT_MAX)
-            return {-1};
-        vector<int> ans;
-        int node = n;
+    void unionBySize(int u, int v){
+        int up_u = findUltiParent(u);
+        int up_v = findUltiParent(v);
+        if(up_u == up_v) return;
 
-        while (parent[node] != node)
-        {
-            ans.push_back(node);
-            node = parent[node];
+        if(size[u] > size[v]){
+            parent[v] = u;
+            size[u] += size[v];
+        }        
+        else{
+            parent[u] = v;
+            size[v] += size[u];
         }
-        ans.push_back(1);
-
-        reverse(ans.begin(), ans.end());
-        return ans;
     }
 };
 
-// ---------- DRIVER CODE ----------
-int main()
-{
-    // Sample input: n = 5 nodes, m = 6 edges
-    int n, m;
-    cin >> n >> m;
+int main(){
+    disjointSet ds(7);
+    ds.unionBySize(1,2);
+    ds.unionBySize(2,3);
+    ds.unionBySize(4,5);
+    ds.unionBySize(6,7);
+    ds.unionBySize(5,6);
 
-    vector<vector<int>> edges(m, vector<int>(3));
-    for (int i = 0; i < m; ++i)
-    {
-        cin >> edges[i][0] >> edges[i][1] >> edges[i][2];
-    }
+    if(ds.findUltiParent(3) == ds.findUltiParent(7)){
+        cout << "same\n";
+    }else cout << "not same\n";
 
-    Solution sol;
-    vector<int> result = sol.shortestPath(n, m, edges);
+    ds.unionBySize(3,7);
 
-    if (result.size() == 1 && result[0] == -1)
-    {
-        cout << "-1\n";
-    }
-    else
-    {
-        for (int node : result)
-        {
-            cout << node << " ";
-        }
-        cout << "\n";
-    }
-
-    return 0;
+    if(ds.findUltiParent(3) == ds.findUltiParent(7)){
+        cout << "same\n";
+    }else cout << "not same\n";
+    
 }
