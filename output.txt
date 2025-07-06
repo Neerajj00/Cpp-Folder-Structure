@@ -1,2 +1,2 @@
 not same
- checking git ignore
+checking git ignore
