@@ -66,5 +66,7 @@ int main(){
     if(ds.findUltiParent(2) == ds.findUltiParent(3)){
         cout << "same\n";
     }else cout << "not same\n";
+
+    cout << "checking git ignore";
     
 }
