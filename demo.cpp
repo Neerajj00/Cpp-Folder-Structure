@@ -22,52 +22,48 @@ class disjointSet{
         return parent[node] = findUltiParent(parent[node]);
     }
 
-    void unionByRank(int u , int v){
-        int up_u = findUltiParent(u);
-        int up_v = findUltiParent(v);
-        if(up_u == up_v) return;
+    void unionByRank(int u, int v) {
+            int up_u = findUltiParent(u);
+            int up_v = findUltiParent(v);
+            if (up_u == up_v)
+                return;
 
-        if(rank[u] > rank[v]){
-            parent[v] = u;
-        }else if (rank[v] > rank[u]){
-            parent[u] = v;
-        }else{
-            parent[v] = u;
-            rank[u]++;
+            if (rank[up_u] > rank[up_v]) {
+                parent[up_v] = up_u;
+            } else if (rank[up_v] > rank[up_u]) {
+                parent[up_u] = up_v;
+            } else {
+                parent[up_v] = up_u;
+                rank[up_u]++;
+            }
         }
-    }
 
-    void unionBySize(int u, int v){
-        int up_u = findUltiParent(u);
-        int up_v = findUltiParent(v);
-        if(up_u == up_v) return;
+        void unionBySize(int u, int v) {
+            int up_u = findUltiParent(u);
+            int up_v = findUltiParent(v);
+            if (up_u == up_v)
+                return;
 
-        if(size[u] > size[v]){
-            parent[v] = u;
-            size[u] += size[v];
-        }        
-        else{
-            parent[u] = v;
-            size[v] += size[u];
+            if (size[up_u] > size[up_v]) {
+                parent[up_v] = up_u;
+                size[up_u] += size[up_v];
+            } else {
+                parent[up_u] = up_v;
+                size[up_v] += size[up_u];
+            }
         }
-    }
 };
 
 int main(){
     disjointSet ds(7);
     ds.unionBySize(1,2);
-    ds.unionBySize(2,3);
+    // ds.unionBySize(2,3);
     ds.unionBySize(4,5);
     ds.unionBySize(6,7);
     ds.unionBySize(5,6);
 
-    if(ds.findUltiParent(3) == ds.findUltiParent(7)){
-        cout << "same\n";
-    }else cout << "not same\n";
-
     ds.unionBySize(3,7);
-
-    if(ds.findUltiParent(3) == ds.findUltiParent(7)){
+    if(ds.findUltiParent(2) == ds.findUltiParent(3)){
         cout << "same\n";
     }else cout << "not same\n";
     
